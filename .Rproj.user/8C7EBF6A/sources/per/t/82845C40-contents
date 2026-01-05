@@ -1,0 +1,254 @@
+---
+title: "Analyse : Investissements Industriels"
+author: "Azer Amine Baccouche"
+date: "2025-12-29"
+format: 
+  revealjs:
+    theme: league
+    transition: slide
+    slide-number: true
+    scrollable: true
+    code-fold: false
+editor: visual
+---
+
+## 1. Introduction et Objectifs
+
+Ce projet vise à analyser l'impact des **Investissements Directs Étrangers (IDE)** sur la création d'emplois en Tunisie.
+
+**Questions clés :**
+1.  Quels sont les principaux partenaires économiques ?
+2.  Quels secteurs créent le plus d'emplois ?
+3.  Existe-t-il une corrélation entre nombre d'entreprises et emplois ?
+
+---
+
+## 2. Problématique & Données
+
+> **Problème :** Les fichiers Open Data (`data.gov.tn`) présentent des anomalies majeures (Format Wide, Espaces dans les chiffres, Fichiers corrompus).
+
+**Objectif ETL :** Transformer ces données brutes en format exploitable pour l'analyse statistique.
+
+---
+
+## 3. Données PAYS : Avant Nettoyage {.smaller}
+
+**État des lieux :**
+Le fichier est en format "Large" (Wide). Les pays sont étalés sur les colonnes.
+
+```{r}
+#| label: pays-raw
+#| echo: true
+#| warning: false
+#| message: false
+
+library(tidyverse)
+library(readxl)
+
+# Lecture du fichier Brut
+if(file.exists("repartitionentreprisesetrangereparpays.xls")) {
+  df_countries <- read_excel("repartitionentreprisesetrangereparpays.xls", skip = 0)
+  
+  # Affichage des données BRUTES
+  print("--- APERÇU BRUT (Avant) ---")
+  head(df_countries, 3)
+}
+```
+
+---
+
+## 3. Données PAYS : Après Nettoyage {.smaller}
+
+**Action :** Pivotage (`pivot_longer`) + Nettoyage Regex (`gsub`).
+
+```{r}
+#| label: pays-clean
+#| echo: true
+
+if(exists("df_countries")) {
+  # Transformation ETL
+  final_map_data <- df_countries %>%
+    rename(Sector = 1) %>%
+    filter(!is.na(Sector), Sector != "Total") %>%
+    mutate(Sector = trimws(Sector)) %>%
+    # Pivotage : Colonnes -> Lignes
+    pivot_longer(cols = -Sector, names_to = "Country", values_to = "Companies") %>%
+    # Regex : Suppression des espaces pour convertir en nombre
+    mutate(Companies = as.numeric(gsub("[^0-9]", "", Companies)))
+
+  # Affichage des données PROPRES
+  print("--- APERÇU NETTOYÉ (Après) ---")
+  head(final_map_data, 3)
+} else {
+   final_map_data <- data.frame(Sector=character())
+}
+```
+
+---
+
+## 4. Données EMPLOI : Avant Nettoyage {.smaller}
+
+**État des lieux :**
+Colonnes multiples et formatage non standard des chiffres.
+
+```{r}
+#| label: jobs-raw
+#| echo: true
+
+# Lecture du fichier Brut
+if(file.exists("emploientreprisesetrangere.xls")) {
+  df_jobs <- read_excel("emploientreprisesetrangere.xls", skip = 0)
+  
+  # Affichage des données BRUTES
+  print("--- APERÇU BRUT (Avant) ---")
+  head(df_jobs, 3)
+}
+```
+
+---
+
+## 4. Données EMPLOI : Après Nettoyage {.smaller}
+
+**Action :** Structuration par Type de Régime et conversion numérique.
+
+```{r}
+#| label: jobs-clean
+#| echo: true
+
+if(exists("df_jobs")) {
+  # Transformation ETL
+  final_jobs_data <- df_jobs %>%
+    rename(Sector = 1) %>%
+    select(Sector, `Totalement Exportatrices`, AUTRE) %>%
+    filter(!is.na(Sector), Sector != "Total") %>%
+    mutate(Sector = trimws(Sector)) %>%
+    pivot_longer(cols = -Sector, names_to = "Company_Type", values_to = "Jobs") %>%
+    mutate(Jobs = as.numeric(gsub("[^0-9]", "", Jobs)))
+
+  # Affichage des données PROPRES
+  print("--- APERÇU NETTOYÉ (Après) ---")
+  head(final_jobs_data, 3)
+} else {
+  final_jobs_data <- data.frame(Sector=character())
+}
+```
+
+---
+
+## 5. Fusion (Merge) des Données {.smaller}
+
+Nous avons maintenant deux tables propres. Nous les fusionnons par **Secteur**.
+
+```{r}
+#| label: merge-data
+#| echo: true
+
+if(nrow(final_map_data) > 0) {
+  stats_data <- final_map_data %>%
+    group_by(Sector) %>%
+    summarise(Total_Companies = sum(Companies, na.rm = TRUE)) %>%
+    left_join(
+      final_jobs_data %>% group_by(Sector) %>% summarise(Total_Jobs = sum(Jobs, na.rm = TRUE)),
+      by = "Sector"
+    )
+    
+  print("--- RESULTAT FINAL (Fusionné) ---")
+  head(stats_data)
+} else {
+  stats_data <- data.frame(Sector=c("A"), Total_Companies=c(0), Total_Jobs=c(0))
+}
+```
+
+---
+
+## 6. Visualisation Power BI
+
+### A. Origine des Investisseurs
+
+![](map_powerbi.png){width="80%"}
+
+<small>Prédominance des partenaires européens (France, Italie).</small>
+
+---
+
+### B. Analyse Sectorielle
+
+![](chart_powerbi.png){width="80%"}
+
+<small>Le Textile et l'Électrique dominent le marché de l'emploi.</small>
+
+---
+
+## 7. Analyse Statistique {.smaller}
+
+**Mesures de Tendance Centrale**
+
+```{r}
+#| echo: true
+mean_jobs <- mean(stats_data$Total_Jobs, na.rm = TRUE)
+median_jobs <- median(stats_data$Total_Jobs, na.rm = TRUE)
+
+print(paste("Moyenne :", round(mean_jobs, 2)))
+print(paste("Médiane :", round(median_jobs, 2)))
+```
+
+**Interprétation :**
+L'écart important entre la moyenne et la médiane indique une **forte variance** (présence de secteurs dominants).
+
+## Test de Normalité
+
+```{r}
+#| echo: true
+if(nrow(stats_data) >= 3 && nrow(stats_data) <= 5000) {
+  shapiro.test(stats_data$Total_Jobs)
+}
+```
+
+**Résultat :** p-value < 0.05. La distribution n'est pas normale.
+
+---
+
+## 8. Modèle de Régression {.smaller}
+
+Corrélation entre nombre d'entreprises et emplois créés.
+
+```{r}
+#| echo: true
+cor_val <- cor(stats_data$Total_Companies, stats_data$Total_Jobs, use = "complete.obs")
+print(paste("Coefficient de Corrélation :", round(cor_val, 4)))
+
+model <- lm(Total_Jobs ~ Total_Companies, data = stats_data)
+model$coefficients 
+```
+
+**Résultat (0.84) :** Corrélation positive très forte.
+
+---
+
+## Visualisation du Modèle
+
+```{r}
+#| echo: false
+#| fig-align: center
+
+ggplot(stats_data, aes(x = Total_Companies, y = Total_Jobs)) +
+  geom_point(color = "darkblue", size = 3) +
+  geom_smooth(method = "lm", color = "red", se = FALSE) +
+  theme_minimal() +
+  labs(
+    title = "Régression : Investissement vs Emploi",
+    x = "Nombre d'Entreprises",
+    y = "Emplois Créés"
+  )
+```
+
+---
+
+## 9. Conclusion
+
+1.  **ETL R :** Transformation réussie de données brutes complexes (Regex & Pivot).
+2.  **Géographie :** Dépendance à l'Europe (France/Italie).
+3.  **Secteurs :** Domination du Textile & Électrique (Offshore).
+4.  **Statistique :** Lien mathématique prouvé entre l'implantation d'entreprises et la création d'emplois.
+
+**Merci de votre attention.**
