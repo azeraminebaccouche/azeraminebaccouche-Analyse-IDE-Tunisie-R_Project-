@@ -16,12 +16,9 @@ editor: visual
 
 Ce projet vise à analyser l'impact des **Investissements Directs Étrangers (IDE)** sur la création d'emplois en Tunisie.
 
-**Questions clés :**
-1.  Quels sont les principaux partenaires économiques ?
-2.  Quels secteurs créent le plus d'emplois ?
-3.  Existe-t-il une corrélation entre nombre d'entreprises et emplois ?
+**Questions clés :** 1. Quels sont les principaux partenaires économiques ? 2. Quels secteurs créent le plus d'emplois ? 3. Existe-t-il une corrélation entre nombre d'entreprises et emplois ?
 
----
+------------------------------------------------------------------------
 
 ## 2. Problématique & Données
 
@@ -29,12 +26,11 @@ Ce projet vise à analyser l'impact des **Investissements Directs Étrangers (ID
 
 **Objectif ETL :** Transformer ces données brutes en format exploitable pour l'analyse statistique.
 
----
+------------------------------------------------------------------------
 
 ## 3. Données PAYS : Avant Nettoyage {.smaller}
 
-**État des lieux :**
-Le fichier est en format "Large" (Wide). Les pays sont étalés sur les colonnes.
+**État des lieux :** Le fichier est en format "Large" (Wide). Les pays sont étalés sur les colonnes.
 
 ```{r}
 #| label: pays-raw
@@ -55,7 +51,7 @@ if(file.exists("repartitionentreprisesetrangereparpays.xls")) {
 }
 ```
 
----
+------------------------------------------------------------------------
 
 ## 3. Données PAYS : Après Nettoyage {.smaller}
 
@@ -84,12 +80,11 @@ if(exists("df_countries")) {
 }
 ```
 
----
+------------------------------------------------------------------------
 
 ## 4. Données EMPLOI : Avant Nettoyage {.smaller}
 
-**État des lieux :**
-Colonnes multiples et formatage non standard des chiffres.
+**État des lieux :** Colonnes multiples et formatage non standard des chiffres.
 
 ```{r}
 #| label: jobs-raw
@@ -105,7 +100,7 @@ if(file.exists("emploientreprisesetrangere.xls")) {
 }
 ```
 
----
+------------------------------------------------------------------------
 
 ## 4. Données EMPLOI : Après Nettoyage {.smaller}
 
@@ -133,7 +128,7 @@ if(exists("df_jobs")) {
 }
 ```
 
----
+------------------------------------------------------------------------
 
 ## 5. Fusion (Merge) des Données {.smaller}
 
@@ -159,7 +154,7 @@ if(nrow(final_map_data) > 0) {
 }
 ```
 
----
+------------------------------------------------------------------------
 
 ## 6. Visualisation Power BI
 
@@ -169,7 +164,7 @@ if(nrow(final_map_data) > 0) {
 
 <small>Prédominance des partenaires européens (France, Italie).</small>
 
----
+------------------------------------------------------------------------
 
 ### B. Analyse Sectorielle
 
@@ -177,7 +172,7 @@ if(nrow(final_map_data) > 0) {
 
 <small>Le Textile et l'Électrique dominent le marché de l'emploi.</small>
 
----
+------------------------------------------------------------------------
 
 ## 7. Analyse Statistique {.smaller}
 
@@ -192,8 +187,7 @@ print(paste("Moyenne :", round(mean_jobs, 2)))
 print(paste("Médiane :", round(median_jobs, 2)))
 ```
 
-**Interprétation :**
-L'écart important entre la moyenne et la médiane indique une **forte variance** (présence de secteurs dominants).
+**Interprétation :** L'écart important entre la moyenne et la médiane indique une **forte variance** (présence de secteurs dominants).
 
 ## Test de Normalité
 
@@ -204,9 +198,9 @@ if(nrow(stats_data) >= 3 && nrow(stats_data) <= 5000) {
 }
 ```
 
-**Résultat :** p-value < 0.05. La distribution n'est pas normale.
+**Résultat :** p-value \< 0.05. La distribution n'est pas normale.
 
----
+------------------------------------------------------------------------
 
 ## 8. Modèle de Régression {.smaller}
 
@@ -223,7 +217,7 @@ model$coefficients
 
 **Résultat (0.84) :** Corrélation positive très forte.
 
----
+------------------------------------------------------------------------
 
 ## Visualisation du Modèle
 
@@ -242,13 +236,18 @@ ggplot(stats_data, aes(x = Total_Companies, y = Total_Jobs)) +
   )
 ```
 
----
+**Interprétation :**Ce graphique illustre notre modèle de régression.
+
+On observe une tendance clairement **linéaire et positive**
+la dispersion des points bleus montre des **disparités sectorielles** sont beaucoup plus intensifs en main-d'œuvre que d'autres pour le même niveau d'investissement.
+
+------------------------------------------------------------------------
 
 ## 9. Conclusion
 
-1.  **ETL R :** Transformation réussie de données brutes complexes (Regex & Pivot).
-2.  **Géographie :** Dépendance à l'Europe (France/Italie).
-3.  **Secteurs :** Domination du Textile & Électrique (Offshore).
-4.  **Statistique :** Lien mathématique prouvé entre l'implantation d'entreprises et la création d'emplois.
+
+Pour conclure cette étude, l'analyse des données nous a permis de confirmer que **l'investissement étranger est un moteur indéniable de l'emploi en Tunisie**.
+
+Nos tests statistiques montrent que l'augmentation du nombre d'entreprises s'accompagne quasi-systématiquement d'une création proportionnelle de postes. Ce lien est particulièrement visible dans les secteurs **offshore** (exportateurs), validant ainsi l'importance stratégique des partenaires européens (France, Italie) dans la dynamique économique locale.
 
 **Merci de votre attention.**

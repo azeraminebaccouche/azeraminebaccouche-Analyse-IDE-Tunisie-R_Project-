@@ -56,3 +56,4 @@ git push -u origin main --force
 Après la synchronisation, vérifiez votre dépôt à :
 https://github.com/azeraminebaccouche/Analyse-IDE-Tunisie-R_Project-
 
+

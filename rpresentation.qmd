@@ -213,6 +213,8 @@ ggplot(stats_data, aes(x = Total_Companies, y = Total_Jobs)) +
     y = "Emplois Créés"
   )
 ```
+**Interprétation :**Ce graphique (Scatter plot) illustre notre modèle de régression. On observe une tendance clairement linéaire et positive (la ligne rouge). Cependant, la dispersion des points bleus montre des disparités sectorielles : certains secteurs (les points très hauts) sont beaucoup plus intensifs en main-d'œuvre que d'autres pour le même niveau d'investissement.
+
 
 ## 6. Conclusion
 
