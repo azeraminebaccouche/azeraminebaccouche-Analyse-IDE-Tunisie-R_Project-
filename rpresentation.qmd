@@ -14,20 +14,17 @@ format:
 Ce projet a pour but d'analyser l'impact des Investissements Directs Étrangers (IDE) sur la création d'emplois en Tunisie.
 
 ### 1.1 Problématique
+
 La Tunisie s'appuie fortement sur les investissements étrangers pour dynamiser son économie. Cependant, une question centrale se pose : **L'augmentation du nombre d'entreprises étrangères se traduit-elle proportionnellement par une création d'emplois durable, ou existe-t-il des disparités sectorielles et géographiques majeures ?**
 
-Nous cherchons à répondre à trois questions principales pour éclaircir cette problématique :
-1. Quels sont les principaux partenaires économiques de la Tunisie ?
-2. Quels secteurs créent le plus d'emplois ?
-3. Existe-t-il une corrélation prouvée entre le nombre d'entreprises et le nombre d'emplois ?
+Nous cherchons à répondre à trois questions principales pour éclaircir cette problématique : 1. Quels sont les principaux partenaires économiques de la Tunisie ? 2. Quels secteurs créent le plus d'emplois ? 3. Existe-t-il une corrélation prouvée entre le nombre d'entreprises et le nombre d'emplois ?
 
 ## 2. Description des Données (Avant Nettoyage)
 
-Nous avons utilisé deux fichiers issus de l'Open Data (`data.gov.tn`) :
-* **Dataset A (Pays) :** Répartition des entreprises par pays d'origine.
-* **Dataset B (Emplois) :** Répartition des emplois par secteur et type de régime (Exportateur vs Local).
+Nous avons utilisé deux fichiers issus de l'Open Data (`data.gov.tn`) : \* **Dataset A (Pays) :** Répartition des entreprises par pays d'origine. \* **Dataset B (Emplois) :** Répartition des emplois par secteur et type de régime (Exportateur vs Local).
 
 ### Les Problèmes Rencontrés
+
 Les données brutes présentaient plusieurs anomalies techniques qui empêchaient une analyse directe :
 
 1.  **Format de fichier incorrect :** Les fichiers `.xls` étaient corrompus ou dans un format HTML non standard.
@@ -38,9 +35,7 @@ Les données brutes présentaient plusieurs anomalies techniques qui empêchaien
 
 Pour corriger ces problèmes, nous avons développé un script R utilisant la librairie `tidyverse`.
 
-**Les étapes clés du code :**
-* **Pivotage (`pivot_longer`) :** Transformation du tableau pour avoir une colonne unique "Pays".
-* **Nettoyage Regex (`gsub`) :** Suppression de tous les caractères non numériques pour convertir le texte en chiffres exploitables.
+**Les étapes clés du code :** \* **Pivotage (`pivot_longer`) :** Transformation du tableau pour avoir une colonne unique "Pays". \* **Nettoyage Regex (`gsub`) :** Suppression de tous les caractères non numériques pour convertir le texte en chiffres exploitables.
 
 ```{r}
 #| label: setup
@@ -128,19 +123,13 @@ Avant l'analyse statistique, nous avons utilisé Power BI pour explorer l'origin
 
 ![Carte des Investisseurs par Pays](map_powerbi.png)
 
-**Analyse :** La carte met en évidence que la majorité des entreprises étrangères implantées en Tunisie proviennent de l'Europe.
-* **La France** est le partenaire principal (cercle le plus grand).
-* **L'Italie** occupe la deuxième position, suivie par l'Allemagne.
-Cela confirme une forte dépendance économique vis-à-vis de l'Union Européenne.
+**Analyse :** La carte met en évidence que la majorité des entreprises étrangères implantées en Tunisie proviennent de l'Europe. \* **La France** est le partenaire principal (cercle le plus grand). \* **L'Italie** occupe la deuxième position, suivie par l'Allemagne. Cela confirme une forte dépendance économique vis-à-vis de l'Union Européenne.
 
 ### B. Analyse Sectorielle de l'Emploi
 
 ![Répartition des Emplois par Secteur](chart_powerbi.png)
 
-**Analyse :** Le graphique en barres montre clairement les secteurs moteurs de l'emploi :
-1.  **Textile & Habillement** (Premier employeur).
-2.  **Industries Électriques et Électroniques**.
-* **Observation clé :** Ces emplois sont portés quasi-exclusivement par le régime **Totalement Exportateur** (barres bleu foncé), ce qui valide l'importance du modèle offshore.
+**Analyse :** Le graphique en barres montre clairement les secteurs moteurs de l'emploi : 1. **Textile & Habillement** (Premier employeur). 2. **Industries Électriques et Électroniques**. \* **Observation clé :** Ces emplois sont portés quasi-exclusivement par le régime **Totalement Exportateur** (barres bleu foncé), ce qui valide l'importance du modèle offshore.
 
 ## 5. Analyse Statistique et Interprétations
 
@@ -194,7 +183,26 @@ summary(model)
 
 **Interprétation :** Le coefficient de corrélation est élevé (proche de 1). Il existe une **corrélation positive forte**. Cela prouve statistiquement que l'attraction de nouvelles entreprises étrangères est le moteur principal de la création d'emplois.
 
-### D. Visualisation du Modèle
+### D. Analyse de la Distribution (Boxplot)
+
+```{r}
+#| label: plot-boxplot
+#| echo: true
+#| fig-align: center
+
+print("Génération du Boxplot...")
+p2 <- ggplot(stats_data, aes(x = "", y = Total_Jobs)) +
+  geom_boxplot(fill = "orange", alpha = 0.5, outlier.color = "red", outlier.size = 3) +
+  geom_jitter(width = 0.2, color = "darkblue") + # Points réels
+  theme_minimal() +
+  labs(
+    title = "Distribution des Emplois (Détection d'Outliers)",
+    y = "Emplois"
+  )
+print(p2)
+```
+
+### E. Visualisation du Modèle
 
 Le graphique ci-dessous illustre cette relation linéaire.
 
@@ -213,8 +221,8 @@ ggplot(stats_data, aes(x = Total_Companies, y = Total_Jobs)) +
     y = "Emplois Créés"
   )
 ```
-**Interprétation :**Ce graphique (Scatter plot) illustre notre modèle de régression. On observe une tendance clairement linéaire et positive (la ligne rouge). Cependant, la dispersion des points bleus montre des disparités sectorielles : certains secteurs (les points très hauts) sont beaucoup plus intensifs en main-d'œuvre que d'autres pour le même niveau d'investissement.
 
+**Interprétation :**Ce graphique (Scatter plot) illustre notre modèle de régression. On observe une tendance clairement linéaire et positive (la ligne rouge). Cependant, la dispersion des points bleus montre des disparités sectorielles : certains secteurs (les points très hauts) sont beaucoup plus intensifs en main-d'œuvre que d'autres pour le même niveau d'investissement.
 
 ## 6. Conclusion
 

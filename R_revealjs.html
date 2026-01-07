@@ -10,7 +10,6 @@
   <meta name="generator" content="quarto-1.7.32">
 
   <meta name="author" content="Azer Amine Baccouche">
-  <meta name="dcterms.date" content="2025-12-29">
   <title>Analyse : Investissements Industriels</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -205,15 +204,14 @@ Azer Amine Baccouche
 </div>
 </div>
 
-  <p class="date">2025-12-29</p>
 </section>
 <section id="introduction-et-objectifs" class="slide level2">
 <h2>1. Introduction et Objectifs</h2>
 <p>Ce projet vise à analyser l’impact des <strong>Investissements Directs Étrangers (IDE)</strong> sur la création d’emplois en Tunisie.</p>
 <p><strong>Questions clés :</strong> 1. Quels sont les principaux partenaires économiques ? 2. Quels secteurs créent le plus d’emplois ? 3. Existe-t-il une corrélation entre nombre d’entreprises et emplois ?</p>
 </section>
-<section id="problématique-données" class="slide level2">
-<h2>2. Problématique &amp; Données</h2>
+<section id="problémes-rencontrés" class="slide level2">
+<h2>2. Problémes Rencontrés</h2>
 <blockquote>
 <p><strong>Problème :</strong> Les fichiers Open Data (<code>data.gov.tn</code>) présentent des anomalies majeures (Format Wide, Espaces dans les chiffres, Fichiers corrompus).</p>
 </blockquote>
@@ -438,6 +436,26 @@ W = 0.71577, p-value = 0.002168</code></pre>
 </div>
 <p><strong>Résultat (0.84) :</strong> Corrélation positive très forte.</p>
 </section>
+<section class="slide level2">
+
+<h3 id="analyse-de-la-distribution">Analyse de la Distribution</h3>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href=""></a><span class="fu">print</span>(<span class="st">"Génération du Boxplot..."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Génération du Boxplot..."</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href=""></a>p2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(stats_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> Total_Jobs)) <span class="sc">+</span></span>
+<span id="cb28-2"><a href=""></a>  <span class="fu">geom_boxplot</span>(<span class="at">fill =</span> <span class="st">"orange"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">outlier.color =</span> <span class="st">"red"</span>, <span class="at">outlier.size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb28-3"><a href=""></a>  <span class="fu">geom_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">color =</span> <span class="st">"darkblue"</span>) <span class="sc">+</span> <span class="co"># Points réels</span></span>
+<span id="cb28-4"><a href=""></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb28-5"><a href=""></a>  <span class="fu">labs</span>(</span>
+<span id="cb28-6"><a href=""></a>    <span class="at">title =</span> <span class="st">"Distribution des Emplois (Détection d'Outliers)"</span>,</span>
+<span id="cb28-7"><a href=""></a>    <span class="at">y =</span> <span class="st">"Emplois"</span></span>
+<span id="cb28-8"><a href=""></a>  )</span>
+<span id="cb28-9"><a href=""></a><span class="fu">print</span>(p2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<img data-src="R_revealjs_files/figure-revealjs/plot-boxplot-1.png" class="quarto-figure quarto-figure-center r-stretch" width="960"></section>
 <section id="visualisation-du-modèle" class="slide level2">
 <h2>Visualisation du Modèle</h2>
 
@@ -447,7 +465,7 @@ W = 0.71577, p-value = 0.002168</code></pre>
 <section id="conclusion" class="slide level2">
 <h2>9. Conclusion</h2>
 <p>Pour conclure cette étude, l’analyse des données nous a permis de confirmer que <strong>l’investissement étranger est un moteur indéniable de l’emploi en Tunisie</strong>.</p>
-<p>Nos tests statistiques montrent que l’augmentation du nombre d’entreprises s’accompagne quasi-systématiquement d’une création proportionnelle de postes. Ce lien est particulièrement visible dans les secteurs <strong>offshore</strong> (exportateurs), validant ainsi l’importance stratégique des partenaires européens (France, Italie) dans la dynamique économique locale.</p>
+<p>Nos tests statistiques montrent que l’augmentation du nombre d’entreprises s’accompagne systématiquement d’une création proportionnelle de postes. Ce lien est particulièrement visible dans les secteurs exportateurs, validant ainsi l’importance stratégique des partenaires européens (France, Italie) dans la dynamique économique locale.</p>
 <p><strong>Merci de votre attention.</strong></p>
 
 </section>

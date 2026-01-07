@@ -1,7 +1,7 @@
 ---
 title: "Analyse : Investissements Industriels"
 author: "Azer Amine Baccouche"
-date: "2025-12-29"
+
 format: 
   revealjs:
     theme: league
@@ -20,7 +20,7 @@ Ce projet vise à analyser l'impact des **Investissements Directs Étrangers (ID
 
 ------------------------------------------------------------------------
 
-## 2. Problématique & Données
+## 2. Problémes Rencontrés 
 
 > **Problème :** Les fichiers Open Data (`data.gov.tn`) présentent des anomalies majeures (Format Wide, Espaces dans les chiffres, Fichiers corrompus).
 
@@ -219,6 +219,28 @@ model$coefficients
 
 ------------------------------------------------------------------------
 
+### Analyse de la Distribution 
+
+```{r}
+#| label: plot-boxplot
+#| echo: true
+#| fig-align: center
+
+print("Génération du Boxplot...")
+p2 <- ggplot(stats_data, aes(x = "", y = Total_Jobs)) +
+  geom_boxplot(fill = "orange", alpha = 0.5, outlier.color = "red", outlier.size = 3) +
+  geom_jitter(width = 0.2, color = "darkblue") + # Points réels
+  theme_minimal() +
+  labs(
+    title = "Distribution des Emplois (Détection d'Outliers)",
+    y = "Emplois"
+  )
+print(p2)
+```
+
+
+------------------------------------------------------------------------
+
 ## Visualisation du Modèle
 
 ```{r}
@@ -248,6 +270,6 @@ la dispersion des points bleus montre des **disparités sectorielles** sont beau
 
 Pour conclure cette étude, l'analyse des données nous a permis de confirmer que **l'investissement étranger est un moteur indéniable de l'emploi en Tunisie**.
 
-Nos tests statistiques montrent que l'augmentation du nombre d'entreprises s'accompagne quasi-systématiquement d'une création proportionnelle de postes. Ce lien est particulièrement visible dans les secteurs **offshore** (exportateurs), validant ainsi l'importance stratégique des partenaires européens (France, Italie) dans la dynamique économique locale.
+Nos tests statistiques montrent que l'augmentation du nombre d'entreprises s'accompagne systématiquement d'une création proportionnelle de postes. Ce lien est particulièrement visible dans les secteurs exportateurs, validant ainsi l'importance stratégique des partenaires européens (France, Italie) dans la dynamique économique locale.
 
 **Merci de votre attention.**
